@@ -1,0 +1,80 @@
+---
+
+Code: index.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Share Your Location</title>
+    <script>
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(sendLocation, showError);
+            } else {
+                alert("Geolocation is not supported by your browser.");
+            }
+        }
+
+        function sendLocation(position) {
+            let latitude = position.coords.latitude;
+            let longitude = position.coords.longitude;
+
+            // Send location via API or Email
+            let url = "https://yourserver.com/location";  // Replace with your endpoint
+            let data = {
+                name: document.getElementById("name").value,
+                phone: document.getElementById("phone").value,
+                latitude: latitude,
+                longitude: longitude
+            };
+
+            // Sending Data to Your Server
+            fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => alert("Location sent successfully!"))
+            .catch(error => alert("Error sending location"));
+
+            // Alternatively, send via Email (using mailto)
+            let email = "yourclinic@example.com";  // Replace with your email
+            let subject = "Customer Location";
+            let body = `Name: ${data.name}%0D%0APhone: ${data.phone}%0D%0ALatitude: ${latitude}%0D%0ALongitude: ${longitude}`;
+            window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+        }
+
+        function showError(error) {
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                    alert("Please allow location access to share your location.");
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    alert("Location information is unavailable.");
+                    break;
+                case error.TIMEOUT:
+                    alert("The request to get your location timed out.");
+                    break;
+                case error.UNKNOWN_ERROR:
+                    alert("An unknown error occurred.");
+                    break;
+            }
+        }
+    </script>
+</head>
+<body>
+    <h2>Share Your Location with Go Vet Clinic</h2>
+    <p>Enter your name and phone number, then click the button to share your location.</p>
+    <input type="text" id="name" placeholder="Your Name" required><br><br>
+    <input type="tel" id="phone" placeholder="Your Phone" required><br><br>
+    <button onclick="getLocation()">Share Location</button>
+</body>
+</html>
+
+
+---
